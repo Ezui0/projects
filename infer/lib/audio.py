@@ -26,8 +26,9 @@ def audio2(i, o, format, sr):
     if format == "ogg": format = "libvorbis"
     if format == "f32le": format = "pcm_f32le"
 
-    ostream = out.add_stream(format, channels=1)
+    ostream = out.add_stream(format)
     ostream.sample_rate = sr
+    ostream.layout = 'mono'  # Set channel layout instead of channels
 
     for frame in inp.decode(audio=0):
         for p in ostream.encode(frame): out.mux(p)
