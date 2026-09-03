@@ -928,7 +928,7 @@ with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="rose",neutral_hue=
                     with gr.Row():
                         dropbox = gr.File(label="Drop your audio here & hit the Reload button.")
                     with gr.Row():
-                        record_button=gr.Audio(source="microphone", label="OR Record audio.", type="filepath")
+                        record_button=gr.Audio(sources="microphone", label="OR Record audio.", type="filepath")
                     with gr.Row():
                         input_audio0 = gr.Dropdown(
                             label=i18n("输入待处理音频文件路径(默认是正确格式示例)"),
