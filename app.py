@@ -926,7 +926,7 @@ with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="rose",neutral_hue=
             with gr.Row():
                 with gr.Column():
                     with gr.Row():
-                        dropbox = gr.File(label="Drop your audio here & hit the Reload button.")
+                        dropbox = gr.Audio(label="Drop your audio here & hit the Reload button.", type="filepath")
                     with gr.Row():
                         record_button=gr.Audio(sources="microphone", label="OR Record audio.", type="filepath")
                     with gr.Row():
