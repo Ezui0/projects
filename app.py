@@ -1,6 +1,5 @@
 import os, sys
 import datetime, subprocess
-from mega import Mega
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import logging
@@ -845,9 +844,6 @@ def download_from_url(url, model):
     try:
         if "drive.google.com" in url:
             subprocess.run(["gdown", url, "--fuzzy", "-O", zipfile_path])
-        elif "mega.nz" in url:
-            m = Mega()
-            m.download_url(url, './zips')
         else:
             subprocess.run(["wget", url, "-O", zipfile_path])
         for filename in os.listdir("./zips"):
