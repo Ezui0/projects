@@ -395,36 +395,37 @@ with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="blue",neutral_hue=
             )
         with gr.TabItem("Download"):
         	with gr.TabItem("Download Music"):
-        url_input = gr.Textbox(label="URL YT", placeholder="Enter YouTube URL here...")
-        with gr.Row():
-            cookie_browser = gr.Dropdown(
-                label="Extract cookies from browser (optional)",
-                choices=["none", "chrome", "firefox", "edge", "brave", "opera", "vivaldi"],
-                value="none",
-                allow_custom_value=False,
-                info="Select a browser to auto-extract login cookies. Requires you to be logged into YouTube in that browser.",
-            )
-        with gr.Row():
-            cookie_file = gr.File(
-                label="Or upload cookies.txt (optional)",
-                file_types=[".txt"],
-                file_count="single",
-            )
-        with gr.Row():
-            optau = gr.Audio(label="Output", type="filepath")
-        dl_yt = gr.Button("Download", variant="primary")
-        dl_yt.click(
-            fn=yt_download,
-            inputs=[url_input, cookie_file, cookie_browser],
-            outputs=[optau],
-        )
+                url_input = gr.Textbox(label="URL YT", placeholder="Enter YouTube URL here...")
             with gr.Row():
-                url=gr.Textbox(label="Enter the URL to the Model:")
+                cookie_browser = gr.Dropdown(
+                    label="Extract cookies from browser (optional)",
+                    choices=["none", "chrome", "firefox", "edge", "brave", "opera", "vivaldi"],
+                    value="none",
+                    allow_custom_value=False,
+                    info="Select a browser to auto-extract login cookies. Requires you to be logged into YouTube in that browser.",
+                )
             with gr.Row():
-                model = gr.Textbox(label="Name your model:")
-                download_button=gr.Button("Download")
-            with gr.Row():
-                status_bar=gr.Textbox(label="")
+                cookie_file = gr.File(
+                    label="Or upload cookies.txt (optional)",
+                    file_types=[".txt"],
+                    file_count="single",
+                )
+                with gr.Row():
+                    optau = gr.Audio(label="Output", type="filepath")
+                dl_yt = gr.Button("Download", variant="primary")
+                dl_yt.click(
+                    fn=yt_download,
+                    inputs=[url_input, cookie_file, cookie_browser],
+                    outputs=[optau],
+                )
+            with gr.TabItem("Download Models"):
+                with gr.Row():
+                    url=gr.Textbox(label="Enter the URL to the Model:")
+                with gr.Row():
+                    model = gr.Textbox(label="Name your model:")
+                    download_button=gr.Button("Download")
+                with gr.Row():
+                    status_bar=gr.Textbox(label="")
                 download_button.click(fn=download_from_url, inputs=[url, model], outputs=[status_bar])
             with gr.Row():
                 gr.Markdown(
