@@ -29,7 +29,6 @@ from infer.lib.train.process_ckpt import (
     merge,
     show_info,
 )
-from infer.modules.uvr5.modules import uvr
 from infer.modules.vc.modules import VC
 logging.getLogger("numba").setLevel(logging.WARNING)
 
@@ -125,7 +124,6 @@ class ToolButton(gr.Button, gr.components.FormComponent):
 
 
 weight_root = os.getenv("weight_root")
-weight_uvr5_root = os.getenv("weight_uvr5_root")
 index_root = os.getenv("index_root")
 
 names = []
@@ -137,11 +135,6 @@ for root, dirs, files in os.walk(index_root, topdown=False):
     for name in files:
         if name.endswith(".index") and "trained" not in name:
             index_paths.append("%s/%s" % (root, name))
-uvr5_names = []
-for name in os.listdir(weight_uvr5_root):
-    if name.endswith(".pth") or "onnx" in name:
-        uvr5_names.append(name.replace(".pth", ""))
-
 
 def change_choices():
     names = []
@@ -898,7 +891,7 @@ def download_model_files(model):
     else:
         return None, f'Could not find {model}.pth or corresponding Index file.'
 
-with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="rose",neutral_hue="zinc")) as app:
+with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="blue",neutral_hue="zinc")) as app:
     with gr.Row():
         gr.HTML("<img  src='file/a.png' alt='image'>")
     with gr.Tabs():
