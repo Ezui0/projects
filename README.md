@@ -1,6 +1,6 @@
 # EasyGUI
 
-
+A simple, easy-to-use voice timbre conversion / voice changer framework.
 
 easy GUI IS comeback!!
 
@@ -8,33 +8,33 @@ easy GUI IS comeback!!
 
 [![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/drive/1r4IRL0UA7JEoZ0ZK8PKfMyTIBHKpyhcw)
 
-# Local Installation
-If you already have RVC installed, then just download GUI.py and drop it in the root folder!
-If you need to install RVC,
 
-I recommend you use a virtual environment
+## Environment setup
 
 ```bash
-python -m venv RVC
-cd RVC
-git clone https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI
-Scripts/activate.bat
-pip install torch torchvision torchaudio
-cd RVC-Project
-wget "https://raw.githubusercontent.com/luisesantillan/project/main/GUI.py"
-wget "https://raw.githubusercontent.com/luisesantillan/project/main/download_files.py"
-pip install -r "requirements.txt"
+python -m pip install -r requirments.txt
 ```
-If you're on Windows, like me, and don't have an NVIDA graphics card, install the requirements from a different .txt:
-```bash
-pip install -r "requirements-dml.txt"
-```
-Also, do not forget to download the necessary models. EasyGUI uses RVC 2 40k models.
 
-```bash
-python download_files.py
+## Start The WebUI
+
 ```
-Finally, run the demo.py
-```bash
-python demo.py
+python app.py
 ```
+
+
+## Credits
++ [ContentVec](https://github.com/auspicious3000/contentvec/)
++ [VITS](https://github.com/jaywalnut310/vits)
++ [HIFIGAN](https://github.com/jik876/hifi-gan)
++ [Gradio](https://github.com/gradio-app/gradio)
++ [FFmpeg](https://github.com/FFmpeg/FFmpeg)
++ [Ultimate Vocal Remover](https://github.com/Anjok07/ultimatevocalremovergui)
++ [pymss-project/pymss](https://github.com/pymss-project/pymss)
++ [audio-slicer](https://github.com/openvpi/audio-slicer)
++ [Vocal pitch extraction:RMVPE](https://github.com/Dream-High/RMVPE)
+  + The pretrained model is trained and tested by [yxlllc](https://github.com/yxlllc/RMVPE) and [RVC-Boss](https://github.com/RVC-Boss).
+
+## Thanks to all contributors for their efforts
+<a href="https://github.com/Ezui0/projects/graphs/contributors" target="_blank">
+  <img src="https://contrib.rocks/image?repo=Ezui0/projects" />
+</a>
