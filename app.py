@@ -893,7 +893,7 @@ def download_model_files(model):
 
 with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="blue",neutral_hue="zinc")) as app:
     with gr.Row():
-        gr.HTML("<img  src='file/a.png' alt='image'>")
+        gr.Markdown("# EasyGUI V3")
     with gr.Tabs():
         with gr.TabItem(i18n("模型推理")):
             with gr.Row():
