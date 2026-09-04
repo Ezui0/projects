@@ -1,6 +1,126 @@
 import gradio as gr
 from original import *
+from urllib.parse import urlparse, parse_qs
+from contextlib import suppress
 
+BASE_DIR = os.getcwd()
+
+output_dir = os.path.join(BASE_DIR, 'audios')
+
+def get_youtube_video_id(url, ignore_playlist=True):
+    """Extract YouTube video ID from various URL formats"""
+    query = urlparse(url)
+    
+    # Handle youtu.be URLs
+    if query.hostname == 'youtu.be':
+        video_id = query.path[1:]
+        if video_id:
+            return video_id
+        return None
+
+    # Handle youtube.com URLs
+    if query.hostname in {'www.youtube.com', 'youtube.com', 'music.youtube.com'}:
+        if query.path == '/watch':
+            video_id = parse_qs(query.query).get('v', [None])[0]
+            if video_id:
+                return video_id
+        elif query.path.startswith('/watch/'):
+            return query.path.split('/')[2] if len(query.path.split('/')) > 2 else None
+        elif query.path.startswith('/embed/'):
+            return query.path.split('/')[2] if len(query.path.split('/')) > 2 else None
+        elif query.path.startswith('/v/'):
+            return query.path.split('/')[2] if len(query.path.split('/')) > 2 else None
+        elif not ignore_playlist:
+            # For playlist URLs, extract playlist ID
+            playlist_id = parse_qs(query.query).get('list', [None])[0]
+            if playlist_id:
+                return playlist_id
+    
+    return None
+
+
+def yt_download(link, cookie_file=None, cookie_browser=None):
+    """Download audio from YouTube"""
+    if not link or not link.strip():
+        error_msg = 'No URL provided. Please enter a valid YouTube URL.'
+        raise_exception(error_msg)
+    
+    # Validate URL
+    if urlparse(link).scheme not in ['http', 'https']:
+        error_msg = 'Invalid URL. Please provide a valid YouTube URL.'
+        raise_exception(error_msg)
+    
+    # Check if it's a valid YouTube URL
+    song_id = get_youtube_video_id(link)
+    if song_id is None:
+        error_msg = 'Invalid YouTube URL. Please check the URL and try again.'
+        raise_exception(error_msg)
+
+    # Build yt-dlp options with cookie support
+    ydl_opts = {
+        'format': 'bestaudio',
+        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+        'nocheckcertificate': True,
+        'ignoreerrors': True,
+        'no_warnings': True,
+        'quiet': True,
+        'extractaudio': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+
+    # Priority 1: use uploaded cookie file
+    if cookie_file is not None:
+        ydl_opts['cookiefile'] = cookie_file.name if hasattr(cookie_file, 'name') else str(cookie_file)
+    # Priority 2: extract cookies from a browser
+    elif cookie_browser and cookie_browser != 'none':
+        ydl_opts['cookiesfrombrowser'] = (cookie_browser,)
+
+    # Common anti-bot settings
+    ydl_opts.setdefault('http_headers', {})
+    ydl_opts['http_headers']['User-Agent'] = (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/135.0.0.0 Safari/537.36'
+    )
+    ydl_opts['extractor_args'] = {'youtube': {'player_client': ['ios', 'web']}}
+    
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Download the audio
+            ydl.download([link])
+            
+            # Get the downloaded file info
+            info = ydl.extract_info(link, download=False)
+            title = info.get('title', 'audio')
+            download_path = os.path.join(output_dir, f"{title}.mp3")
+            
+            # Check if file exists
+            if not os.path.exists(download_path):
+                # Try alternative naming (sometimes yt-dlp adds suffixes)
+                import glob
+                files = glob.glob(os.path.join(output_dir, f"{title}*.mp3"))
+                if files:
+                    download_path = files[0]
+                else:
+                    error_msg = 'Failed to download or locate the audio file.'
+                    raise_exception(error_msg)
+            
+            return download_path
+            
+    except gr.Error:
+        raise
+    except Exception as e:
+        error_msg = f'Error downloading from YouTube: {str(e)}'
+        if 'Sign in to confirm' in str(e) or 'bot' in str(e).lower():
+            error_msg += (
+                '\n\nTip: YouTube requires cookies to bypass bot detection. '
+                'Try uploading a cookies.txt file or selecting a browser to extract cookies from.'
+            )
+        raise_exception(error_msg)
 
 
 
@@ -273,7 +393,31 @@ with gr.Blocks(title="🔊",theme=gr.themes.Base(primary_hue="blue",neutral_hue=
                 inputs=[sid0, protect0, protect1],
                 outputs=[spk_item, protect0, protect1, file_index2, file_index4],
             )
-        with gr.TabItem("Download Model"):
+        with gr.TabItem("Download"):
+        	with gr.TabItem("Download Music"):
+        url_input = gr.Textbox(label="URL YT", placeholder="Enter YouTube URL here...")
+        with gr.Row():
+            cookie_browser = gr.Dropdown(
+                label="Extract cookies from browser (optional)",
+                choices=["none", "chrome", "firefox", "edge", "brave", "opera", "vivaldi"],
+                value="none",
+                allow_custom_value=False,
+                info="Select a browser to auto-extract login cookies. Requires you to be logged into YouTube in that browser.",
+            )
+        with gr.Row():
+            cookie_file = gr.File(
+                label="Or upload cookies.txt (optional)",
+                file_types=[".txt"],
+                file_count="single",
+            )
+        with gr.Row():
+            optau = gr.Audio(label="Output", type="filepath")
+        dl_yt = gr.Button("Download", variant="primary")
+        dl_yt.click(
+            fn=yt_download,
+            inputs=[url_input, cookie_file, cookie_browser],
+            outputs=[optau],
+        )
             with gr.Row():
                 url=gr.Textbox(label="Enter the URL to the Model:")
             with gr.Row():
