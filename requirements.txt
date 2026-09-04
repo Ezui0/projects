@@ -105,7 +105,6 @@ networkx==3.2.1
 noisereduce==3.0.2
 numba==0.57.0
 numpy==1.23.5
-omegaconf==2.2.3
 onnx==1.16.2
 onnx2torch==1.5.15
 onnxruntime-gpu==1.19.0
